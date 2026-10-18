@@ -1,7 +1,7 @@
 package require Tcl 8.6
 package require json
 package require json::write
-package require licensebox::native 0.1.0
+package require licensebox::native 0.2.0
 namespace eval ::licensebox {
  proc arg {s} {if {[::string first \x00 $s]>=0} {return -code error -errorcode {LICENSEBOX invalid_argument} "NUL argument"};return $s}
  proc string {s} {json::write string [arg $s]}
@@ -35,4 +35,4 @@ namespace eval ::licensebox {
   method record {command success elapsed} {if {![::string is double -strict $elapsed] || $elapsed in {Inf -Inf NaN} || $elapsed<0} {return -code error -errorcode {LICENSEBOX invalid_argument} "invalid elapsed"};my call record [list command [::licensebox::string $command] success [expr {$success?"true":"false"}] elapsed $elapsed]}
  }
 }
-package provide licensebox 0.1.0
+package provide licensebox 0.2.0

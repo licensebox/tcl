@@ -11,7 +11,7 @@ The client supports lease, require/module check, local status, sign-in, logout, 
 Build the native core using `scripts/install-native.sh`, then set `LICENSEBOX_LIB_DIR="$PWD/.native/lib"` and `LD_LIBRARY_PATH="$LICENSEBOX_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"`. Supply only administrator-provided trusted Ed25519 public keys.
 
 ```tcl
-package require licensebox 0.1.0
+package require licensebox 0.2.0
 proc show_sign_in {url code} { puts "$url $code" }
 set client [licensebox::new my-app [dict create product-key $env(LICENSEBOX_PUBLIC_KEY)] {} \
     [dict create on_sign_in show_sign_in]]
