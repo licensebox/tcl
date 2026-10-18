@@ -23,6 +23,7 @@ namespace eval ::licensebox {
   method close {} {if {[info commands $native] ne ""} {$native close}}
   method call {op {arguments {}}} {json::json2dict [$native call $op [json::write object {*}$arguments]]}
   method lease {} {my call lease}
+  method heartbeat {module} {my call heartbeat [list module [::licensebox::string $module]]}
   method require_module {module} {my call require [list module [::licensebox::string $module]]}
   method status {} {my call status}
   method sign_in {{timeout 0}} {if {![::string is double -strict $timeout] || $timeout in {Inf -Inf NaN}} {return -code error -errorcode {LICENSEBOX invalid_argument} "invalid timeout"};my call sign_in [list timeout $timeout]}

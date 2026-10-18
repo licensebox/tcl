@@ -17,6 +17,7 @@ proc run {} {
  try {
   switch $op {
    require {set m core;if {[dict exists $r module]} {set m [dict get $r module]};$c call require [json::write object module [licensebox::string $m]]}
+   heartbeat - heartbeat-repeat - heartbeat-after-require {set m core;if {[dict exists $r module]} {set m [dict get $r module]};set args [json::write object module [licensebox::string $m]];if {$op eq "heartbeat-after-require"} {$c call require $args};if {$op eq "heartbeat-repeat"} {$c call heartbeat $args};$c call heartbeat $args}
    repeat {$c call require {{"module":"core"}};$c call require {{"module":"core"}}}
    sign_in {$c call sign_in {{"timeout":3}}}
    request {$c call request [json::write object modules {["export"]} note [licensebox::string "café – test"]]}

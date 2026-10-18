@@ -19,3 +19,17 @@ try { $client require_module core; # Protected work. } finally { $client close; 
 ```
 
 Requires Tcl 8.6, Tcllib JSON, and the compiled extension. Build with `make`; add the directory containing `pkgIndex.tcl` to `auto_path` or `TCLLIBPATH`. Errors use the structured error code `{LICENSEBOX protocol_code}`. Hooks are Tcl command prefixes retained until close. Methods: `lease`, `require_module`, `status`, `sign_in`, `logout`, `modules`, `requests`, `request_access`, `access_link`, `record`, `close`. Namespace helpers: `derive_binding`, `native_binding`, `verify_lease`.
+
+## Optional heartbeat checkpoints
+
+Call `$client heartbeat core` with a module name to force a silent server check. It returns
+`{"lease": ..., "online": true}` after contact, or `online: false` only while
+an already verified offline lease remains valid. Heartbeat never activates,
+transfers a seat or creates an installation key; sign in explicitly first.
+Explicit refusals and removed module grants stop access immediately.
+
+Background work remains opt-in. Schedule checkpoints in your application's own
+runtime/event loop and stop protected work at the last verified lease's `expires`
+time even if a renewal hangs. Use the signed `heartbeat.interval_seconds` when
+present (otherwise a 300-second interval is a reasonable default); a failed
+contact never extends the signed deadline. This SDK starts no heartbeat threads.
