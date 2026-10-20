@@ -2,7 +2,7 @@
 
 MIT · 2026 Vijai Kumar · https://meshing.engineer
 
-Native application licensing for Linux. Requires the public Licensebox C v0.4.0 shared library. Set `LICENSEBOX_LIB_DIR` (or `LICENSEBOX_LIBRARY` for runtime FFI bindings), and add that directory to `LD_LIBRARY_PATH` when linking native extensions. The host library retains installation keys, verifies leases, enforces native identity and stores usage locally. Other platforms and browser runtimes are unvalidated.
+Native application licensing for Linux. Requires the public Licensebox C v0.5.0 shared library. Set `LICENSEBOX_LIB_DIR` (or `LICENSEBOX_LIBRARY` for runtime FFI bindings), and add that directory to `LD_LIBRARY_PATH` when linking native extensions. The host library retains installation keys, verifies leases, enforces native identity and stores usage locally. Other platforms and browser runtimes are unvalidated.
 
 The client supports lease, require/module check, local status, sign-in, logout, modules, access requests, access links, and usage recording. Stateless derive/native binding and lease verification helpers are included. Close each client explicitly in a finally/ensure block. Trusted clock, machine binding, sign-in and cancellation hooks are callable platform integration points; never source identity from end users. Callbacks must not reenter or close their client. Callback exceptions become `callback_error` after the native call returns. Native-owned JSON is always freed.
 
@@ -11,7 +11,7 @@ The client supports lease, require/module check, local status, sign-in, logout, 
 Build the native core using `scripts/install-native.sh`, then set `LICENSEBOX_LIB_DIR="$PWD/.native/lib"` and `LD_LIBRARY_PATH="$LICENSEBOX_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"`. Supply only administrator-provided trusted public keys (`ed25519-mldsa65:...`).
 
 ```tcl
-package require licensebox 0.2.0
+package require licensebox 0.3.0
 proc show_sign_in {url code} { puts "$url $code" }
 set client [licensebox::new my-app [dict create product-key $env(LICENSEBOX_PUBLIC_KEY)] {} \
     [dict create on_sign_in show_sign_in]]
