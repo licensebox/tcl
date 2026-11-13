@@ -1,7 +1,7 @@
 package require Tcl 8.6
 package require json
 package require json::write
-package require licensebox::native 0.3.0
+package require licensebox::native 0.4.0
 namespace eval ::licensebox {
  proc arg {s} {if {[::string first \x00 $s]>=0} {return -code error -errorcode {LICENSEBOX invalid_argument} "NUL argument"};return $s}
  proc string {s} {json::write string [arg $s]}
@@ -12,7 +12,7 @@ namespace eval ::licensebox {
  # hooks is a dict of trusted Tcl command prefixes, never serialized identity.
  proc new {product keys {options {}} {hooks {}}} {
   set opts [list product [string $product] keys [keyjson $keys] version [string [expr {[dict exists $options version]?[dict get $options version]:""}]]]
-  foreach k {server directory ca_bundle} {if {[dict exists $options $k]} {lappend opts $k [string [dict get $options $k]]}}
+  foreach k {server directory ca_bundle enrol_token} {if {[dict exists $options $k]} {lappend opts $k [string [dict get $options $k]]}}
   set native [native::create [json::write object {*}$opts] $hooks]
   Client new $native
  }
@@ -32,7 +32,12 @@ namespace eval ::licensebox {
   method requests {} {my call requests}
   method request_access {modules {note ""}} {set names {};foreach s $modules {lappend names [::licensebox::string $s]};my call request [list modules [json::write array {*}$names] note [::licensebox::string $note]]}
   method access_link {} {my call access-link}
+  # Service accounts and floating copies: require_module checks a floating module
+  # out by itself; the enrol_token option (else LICENSEBOX_ENROL_TOKEN) enrols.
+  method enrol {token} {my call enrol [list token [::licensebox::string $token]]}
+  method checkout {module} {my call checkout [list module [::licensebox::string $module]]}
+  method checkin {args} {set names {};foreach s $args {lappend names [::licensebox::string $s]};my call checkin [list modules [json::write array {*}$names]];return}
   method record {command success elapsed} {if {![::string is double -strict $elapsed] || $elapsed in {Inf -Inf NaN} || $elapsed<0} {return -code error -errorcode {LICENSEBOX invalid_argument} "invalid elapsed"};my call record [list command [::licensebox::string $command] success [expr {$success?"true":"false"}] elapsed $elapsed]}
  }
 }
-package provide licensebox 0.3.0
+package provide licensebox 0.4.0

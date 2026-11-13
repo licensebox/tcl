@@ -12,6 +12,7 @@ proc run {} {
  set options [dict create version conformance server [dict get $r server] directory [dict get $r directory]]
  set opts [list product [licensebox::string $product] keys [licensebox::keyjson [dict get $r keys]] version [licensebox::string conformance] server [licensebox::string [dict get $r server]] directory [licensebox::string [dict get $r directory]]]
  if {[dict exists $r ca_bundle]} {lappend opts ca_bundle [licensebox::string [dict get $r ca_bundle]]}
+ if {[dict exists $r enrol_token]} {lappend opts enrol_token [licensebox::string [dict get $r enrol_token]]}
  # Native command retains typed Tcl callbacks; raw JSON stays test-local for exact adapter output.
  set c [::licensebox::native::create [json::write object {*}$opts] [dict create clock clock_hook machine_binding binding_hook on_sign_in sign_hook]]
  try {
@@ -22,6 +23,9 @@ proc run {} {
    sign_in {$c call sign_in {{"timeout":3}}}
    request {$c call request [json::write object modules {["export"]} note [licensebox::string "café – test"]]}
    access-link {$c call access-link {{}}}
+   enrol {$c call enrol [json::write object token [licensebox::string [dict get $r token]]]}
+   checkout {$c call checkout [json::write object module [licensebox::string [dict get $r module]]]}
+   checkin {$c call checkin [json::write object modules [json::write array [licensebox::string [dict get $r module]]]];return null}
    record {$c call record {{"command":"export","success":true,"elapsed":0.125}};$c call record {{"command":"export","success":false,"elapsed":0.025}};return null}
    default {$c call $op {{}}}
   }
